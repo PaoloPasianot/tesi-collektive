@@ -6,6 +6,9 @@
  * as described in the LICENSE file in this project's repository's top directory.
  */
 
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsExec
+
 plugins {
     alias(libs.plugins.kotlin.allopen)
     alias(libs.plugins.kotlinx.benchmark)
@@ -16,6 +19,10 @@ apply(plugin = rootProject.libs.plugins.kotlin.multiplatform.id)
 kotlinMultiplatform {
     jvm()
     js {
+        nodejs()
+    }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmWasi {
         nodejs()
     }
     sourceSets {
@@ -41,6 +48,7 @@ benchmark {
     targets {
         register("jvm")
         register("js")
+        register("wasmWasi")
     }
     configurations {
         named("main") {
@@ -72,6 +80,10 @@ benchmark {
             iterationTimeUnit = "ms"
         }
     }
+}
+
+tasks.withType<NodeJsExec>().matching { it.name.startsWith("wasmWasi") }.configureEach {
+    dependsOn(":kotlinWasmToolingSetup")
 }
 
 // Benchmarks are not a deliverable

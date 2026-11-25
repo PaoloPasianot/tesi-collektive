@@ -90,6 +90,7 @@ fun Project.configureKotlinMultiplatform() {
         @OptIn(ExperimentalWasmDsl::class)
         wasmWasi {
             nodejs()
+            wasmtime()
             binaries.library()
         }
         val nativeSetup: KotlinNativeTarget.() -> Unit = {
